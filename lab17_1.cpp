@@ -278,13 +278,14 @@ void showBill() {
 void employ() {
     while (true) {
         cout << endl;
-        cout << "======= TABLE STATUS =======" << endl;
+        cout << "\n======= TABLE STATUS =======" << endl;
         for (int i = 1; i <= 5; i++) {
-            cout << "Table " << i << " : ";
-            if (tables[i].count > 0) cout << "[NOT AVAILABLE]" << endl;
-            else cout << "[AVAILABLE]" << endl;
+            cout << "TABLE " << i << " : ";
+            if (tables[i].count > 0) cout << "[ NOT AVAILABLE ]" << endl;
+            else cout << "[ AVAILABLE ]" << endl;
         }
-        cout << "Select table (0 to Exit): "; 
+        cout << "============================" << endl;
+        cout << "SELECT TABLE ( 0 TO EXIT ) >> "; 
         cin >> check;
 
         if (check == 0) return;
@@ -422,8 +423,8 @@ int main() {
         if (Num == 1) { table = 0; customer(); }
         else if (Num == 2 || Num == 3) {
             string pass;
-            cout << ">>>>>> LOGIN <<<<<<" << endl;
-            cout << "Enter Password: ";
+            cout << "\n\n>>>>>> LOGIN <<<<<<" << endl;
+            cout << "ENTER PASSWORD : ";
             cin >> pass;
             if (Num == 2 && pass == "555") employ();
             else if (Num == 3 && pass == "header") Host();
