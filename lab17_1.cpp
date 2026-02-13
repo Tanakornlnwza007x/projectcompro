@@ -1,211 +1,434 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include <fstream>
+#include <vector>
+
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+using namespace std;
+
+//================= โครงสร้างข้อมูลต่อโต๊ะ =================
+struct TableOrder {
+    vector<string> List;   // เปลี่ยนเป็น vector
+    vector<int> Price;    // เปลี่ยนเป็น vector
+    vector<int> Amount;   // เปลี่ยนเป็น vector
+    int count = 0;
+    int total = 0;
+};
+
+//TableOrder tables[6];  <-- อันนี้คือเวอร์ชันเก่านะ   
+vector<TableOrder> tables(6); // โต๊ะ 1-5 ใช้จริง
+
+//================= Global variables =================
+string food;
+int Num;
+int table = 0;
+int price[6];
+int menu;
+int more;
+int amount;
+int check;
+
+vector<int> useTable(6, 0);
+
+//================= prototypes =================
+void home();
+void employ();
+void menuu();
+void customer();
+int moree();
+void selectTable();
+void showBill();
+void Host();
+void summarize();
+void checktable();
+void checkfood();
+void backtohome();
+
+//====================================================
+
 void home() {
-    cout << "============================================================\n";
-    cout << "||                                                        ||\n";
-    cout << "||          >>> RESTAURANT MANAGEMENT SYSTEM <<<          ||\n";
-    cout << "||                                                        ||\n";
-    cout << "============================================================\n";
-    cout << "||                                                        ||\n";
-    cout << "||   (1) CUSTOMER                                         ||\n";
-    cout << "||   (2) EMPLOYEE                                         ||\n";
-    cout << "||   (3) HOST / ADMIN                                     ||\n";
-    cout << "||                                                        ||\n";
-    cout << "||   (0) EXIT                                             ||\n";
-    cout << "||                                                        ||\n";
-    cout << "============================================================\n";
+    cout << "\n============================================================" << endl;
+    cout << "|                                                          |" << endl;
+    cout << "|          >>> RESTAURANT MANAGEMENT SYSTEM <<<            |" << endl;
+    cout << "|                                                          |" << endl;
+    cout << "============================================================" << endl;
+    cout << "|                                                          |" << endl;
+    cout << "|   (1) CUSTOMER                                           |" << endl;
+    cout << "|   (2) EMPLOYEE                                           |" << endl;
+    cout << "|   (3) HOST / ADMIN                                       |" << endl;
+    cout << "|                                                          |" << endl;
+    cout << "|   (0) EXIT                                               |" << endl;
+    cout << "|                                                          |" << endl;
+    cout << "============================================================" << endl;
     cout << "SELECT OPTION >> ";
     cin >> Num;
 }
 
 void backtohome() {
-    cout << "\n";
-    cout << ">>> [0] Back to Home <<<\n";
-    cout << ">>> [9] Change Table <<< ";
-    cout << "\nSELECT OPTION >> ";
+    cout << endl;
+    cout << ">>> [0] BACK TO HOME <<<" << endl;
+    cout << ">>> [9] CHANGE TABLE <<< " << endl;
+    cout << "SELECT OPTION >> " << endl;
 }
-
-
 
 void customer() {
     while (true) {
-
         if (table == 0) {
             selectTable();
-            if (table == 0) {
-                cout << endl;
-                cout << endl;
-                return;
-            } // ← ป้องกันเข้าเมนูอาหารโดยไม่เลือกโต๊ะ
+            if (table == 0) return;
         }
-        cout << "\n\n\n========================================\n";
-        cout << "            ORDER CATEGORIES            \n";
-        cout << "========================================\n";
-        cout << "[1] RECOMMENDED MENU \n";
-        cout << "[2] MAIN COURSES\n";
-        cout << "[3] BEVERAGES\n";
-        cout << "[4] DESSERTS\n";
-        cout << "----------------------------------------\n";
-        cout << "[0] HOME        [9] CHANGE TABLE \n";
-        cout << "----------------------------------------\n";
+        cout << endl << endl << endl;
+        cout << "========================================" << endl;
+        cout << "            ORDER CATEGORIES            " << endl;
+        cout << "========================================" << endl;
+        cout << "[1] RECOMMENDED MENU " << endl;
+        cout << "[2] MAIN COURSES" << endl;
+        cout << "[3] BEVERAGES" << endl;
+        cout << "[4] DESSERTS" << endl;
+        cout << "----------------------------------------" << endl;
+        cout << "[0] HOME     |   [9] CHANGE TABLE " << endl;
+        cout << "----------------------------------------" << endl;
         cout << "SELECT MENU >> ";
 
         cin >> menu;
+        if (menu == 0) return;
+        if (menu == 9) {
+            selectTable();
+            continue;
+        }
+
+
         menuu();
 
-        if (menu == 0) {
-            cout << endl;
-            cout << endl;
-
-            return;
-        }
-
-        if (menu == 9) {
-            selectTable();        // เลือกโต๊ะใหม่
-            continue;            // กลับไปที่ customer() ใหม่;
-        }
-
-        cout << "Amount : ";
+        cout << "AMOUNT >>  ";
         cin >> amount;
 
         if (menu >= 1 && menu <= 4) {
-            List[orderCount] = food;
-            orderPrice[orderCount] = price[menu];
-            Amount[orderCount] = amount;   // บันทึกจำนวนของรายการนี้
+            // ใช้ push_back เพื่อเพิ่มข้อมูลลงใน vector
+            tables[table].List.push_back(food);
+            tables[table].Price.push_back(price[menu]);
+            tables[table].Amount.push_back(amount);
 
-            totalPrice += (price[menu] * Amount[orderCount]); // คำนวณราคารวมโดยคูณกับจำนวน ที่สั่ง
-            cout << " " << endl;
-            cout << ">> Added : " << food << "*" << amount << " - " << price[menu] * amount << " Baht" << " <<" << endl;
-            cout << " " << endl;
-            orderCount++;
+            tables[table].total += price[menu] * amount;
+
+            cout << endl;
+            cout << ">> ADDED : " << food << " x" << amount
+                << " - " << price[menu] * amount << " BAHT <<" << endl;
+            cout << endl;
+            tables[table].count++;
         }
         else {
-            cout << "Invalid menu!" << endl;
-        }
-
-        if (menu == 0) return;
-
-        if (menu == 9) {           // ★ เพิ่ม
-            selectTable();        // เลือกโต๊ะใหม่
-            continue;            // กลับไปที่ customer() ใหม่;
+            cout << "INVALID MENU!!" << endl;
         }
 
         int result = moree();
-        if (result == 0) return; // กลับไป main
+        if (result == 0) return;
     }
 }
 
-
-
 void selectTable() {
-    cout << "\n";
-    cout << "\n\n================== SELECT TABLE ==================\n";
-    cout << "  1. Table 1\n";
-    cout << "  2. Table 2\n";
-    cout << "  3. Table 3\n";
-    cout << "  4. Table 4\n";
-    cout << "  5. Table 5\n";
-    cout << "--------------------------------------------------\n";
-    cout << "  0. Back to Home\n";
-    cout << "--------------------------------------------------\n";
+    cout << endl << endl;
+    cout << "================== SELECT TABLE ==================" << endl;
+    cout << "  (1) TABLE 1" << endl;
+    cout << "  (2) TABLE 2" << endl;
+    cout << "  (3) TABLE 3" << endl;
+    cout << "  (4) TABLE 4" << endl;
+    cout << "  (5) TABLE 5" << endl;
+    cout << "--------------------------------------------------" << endl;
+    cout << " [0] BACK TO HOME " << endl;
+    cout << "--------------------------------------------------" << endl;
     cout << "CHOOSE YOUR TABLE >> ";
     cin >> table;
 
-
-
     if (table >= 1 && table <= 5) {
-        useTable[table]++; //เก็บสถิติว่าโต๊ะนี้ถูกใช้งาน 1 ครั้ง
+        useTable[table]++;
     }
 }
 
 
 void menuu() {
     int item, size;
-
-    if (menu == 0) return;
     if (menu == 1) {
-        cout << "\n\n\n============= RECOMMENDED =============\n";
-        cout << " 1) Spicy Tom Yum Goong Soup With Rice   80/85 BTH\n";
-        cout << " 2) Mango Sticky Rice                    50/55 BTH\n";
-        cout << " 3) Som Tam Thai                         50/60 BTH\n";
-        cout << "---------------------------------------\n";
-        cout << "Select Item >> ";
-        cin >> item;
+        cout << endl << endl << endl;
+        cout << "==================== RECOMMENDED ====================" << endl;
+        cout << " 1) SPICY TOM YUM GOONG SOUP WITH RICE   80/85 BTH" << endl;
+        cout << " 2) MANGO STICKY RICE                    50/55 BTH" << endl;
+        cout << " 3) SOM TAM THAI                         50/60 BTH" << endl;
+        cout << "-----------------------------------------------------" << endl;
+        cout << "SELECT MENU >> "; cin >> item;
 
-        if (item == 1) { food = "Spicy Tom Yum Goong Soup With Rice"; cout << "(1) Normal 80  (2) Extra 85 : "; cin >> size; price[menu] = (size == 1) ? 60 : 65; }
-        else if (item == 2) { food = "Mango Sticky Rice"; cout << "(1) Normal 50  (2) Extra 55 : "; cin >> size; price[menu] = (size == 1) ? 50 : 55; }
-        else if (item == 3) { food = "Som Tam Thai"; cout << "(1) Normal 55  (2) Extra 60 : "; cin >> size; price[menu] = (size == 1) ? 55 : 60; }
-        else { cout << "Invalid!\n"; return; }
+        if (item == 1) {
+            food = "TOM YUM GOONG";
+            cout << "SELECT SIZE (1) NORMAL 80 / (2) EXTRA 85 >> ";
+            cin >> size;
+
+            if (size == 1) {
+                price[menu] = 80;
+            }
+            else {
+                price[menu] = 85;
+            }
+        }
+        else if (item == 2) {
+            food = "MANGO STICKY RICE";
+            cout << "SELECT SIZE (1) NORMAL 50 / (2) EXTRA 55 >> ";
+            cin >> size;
+            if (size == 1) {
+                price[menu] = 50;
+            }
+            else {
+                price[menu] = 55;
+            }
+        }
+        else if (item == 3) {
+            food = "SOM TAM THAI";
+            cout << "SELECT SIZE (1) NORMAL 50 / (2) EXTRA 60 >> ";
+            cin >> size;
+            if (size == 1) {
+                price[menu] = 50;
+            }
+            else {
+                price[menu] = 60;
+            }
+        }
     }
-
-    // ================= MAIN COURSES =================
     else if (menu == 2) {
-        cout << "\n\n\n========== MAIN COURSES ==========\n";
-        cout << " 1) Fried Pork With Rice            30/35 BTH\n";
-        cout << " 2) Fried Chicken With Rice         30/35 BTH\n";
-        cout << " 3) Fried Fish With Rice            45/50 BTH\n";
-        cout << "----------------------------------\n";
-        cout << "Select Item >> ";
-        cin >> item;
-
-        if (item == 1) { food = "Pork Rice"; cout << "(1) Normal 30  (2) Extra 35 : "; cin >> size; price[menu] = (size == 1) ? 30 : 35; }
-        else if (item == 2) { food = "Chicken Rice"; cout << "(1) Normal 30  (2) Extra 35 : "; cin >> size; price[menu] = (size == 1) ? 30 : 35; }
-        else if (item == 3) { food = "Fried Fish Rice"; cout << "(1) Normal 45  (2) Extra 50 : "; cin >> size; price[menu] = (size == 1) ? 45 : 50; }
-        else { cout << "Invalid!\n"; return; }
+        cout << endl << endl << endl;
+        cout << "========== MAIN COURSES ==========" << endl;
+        cout << " 1) FRIED PORK RICE      30/35 BTH" << endl;
+        cout << " 2) FRIED CHICKEN RICE   30/35 BTH" << endl;
+        cout << "----------------------------------" << endl;
+        cout << "SELECT MENU >> "; cin >> item;
+        if (item == 1) {
+            food = "FRIED PORK RICE";
+            cout << "SELECT SIZE (1) NORMAL 30 / (2) EXTRA 35 >> ";
+            cin >> size;
+            if (size == 1) {
+                price[menu] = 30;
+            }
+            else {
+                price[menu] = 35;
+            }
+        }
+        else if (item == 2) {
+            food = "FRIED CHICKEN RICE";
+            cout << "SELECT SIZE (1) NORMAL 30 / (2) EXTRA 35 >> ";
+            cin >> size;
+            if (size == 1) {
+                price[menu] = 30;
+            }
+            else {
+                price[menu] = 35;
+            }
+        }
     }
 
-    // ================= BEVERAGES =================
     else if (menu == 3) {
-        cout << "\n\n\n========== BEVERAGES ==========\n";
-        cout << " 1) Water          10 BTH\n";
-        cout << " 2) Soft Drink     20 BTH\n";
-        cout << " 3) Orange Juice   35 BTH\n";
-        cout << "--------------------------------\n";
-        cout << "Select Item >> ";
+        cout << endl << endl << endl;
+        cout << "=============== BEVERAGES ===============" << endl;
+        cout << " 1) WATER                         10 BTH " << endl;
+        cout << " 2) SOFT DRINK                    20 BTH " << endl;
+        cout << "-----------------------------------------" << endl;
+        cout << "SELECT MENU >> ";
         cin >> item;
-
-        if (item == 1) { food = "Water"; price[menu] = 10; }
-        else if (item == 2) { food = "Soft Drink"; price[menu] = 20; }
-        else if (item == 3) { food = "Orange Juice"; price[menu] = 35; }
-        else { cout << "Invalid!\n"; return; }
+        if (item == 1) { food = "WATER"; price[menu] = 10; }
+        else { food = "SOFT DRINK"; price[menu] = 20; }
     }
-
-    // ================= DESSERTS =================
     else if (menu == 4) {
-        cout << "\n\n\n========== DESSERTS ==========\n";
-        cout << " 1) Ice Cream   15 BTH \n";
-        cout << " 2) Cake        30 BTH \n";
-        cout << "-------------------------------\n";
-        cout << "Select Item >> ";
-        cin >> item;
-
-        if (item == 1) { food = "Ice Cream"; price[menu] = 15; }
-        else if (item == 2) { food = "Cake"; price[menu] = 30; }
-        else { cout << "Invalid!\n"; return; }
+        cout << endl << endl << endl;
+        cout << "================ DESSERTS ===============" << endl;
+        cout << " 1) ICE CREAM                     15 BTH" << endl;
+        cout << " 2) CAKE                          30 BTH" << endl;
+        cout << "-----------------------------------------" << endl;
+        cout << "SELECT MENU >> "; cin >> item;
+        if (item == 1) { food = "ICE CREAM"; price[menu] = 15; }
+        else { food = "CAKE"; price[menu] = 30; }
     }
 }
 
-
 int moree() {
     while (true) {
-        cout << "More order? (1) yes / (2) no  " << endl;
+        cout << "MORE ORDER ? (1) YES / (2) NO  " << endl;
         backtohome();
-        cout << ": "; cin >> more;
+        cin >> more;
+        if (more == 1) return 1;
+        if (more == 2) { showBill(); return 0; }
+        if (more == 0) return 0;
+        if (more == 9) { selectTable(); return 1; }
+        cout << "INVALID!! TRY AGAIN" << endl;
+    }
+}
 
-        if (more == 1) {
-            return 1; // กลับไป main → main เรียก customer() ใหม่เอง
+void showBill() {
+    cout << endl;
+    cout << "============ BILL SUMMARY ===========" << endl;
+    cout << "TABLE : " << table << endl;
+    for (int i = 0; i < tables[table].count; i++) {
+        cout << i + 1 << ". " << tables[table].List[i] << " x" << tables[table].Amount[i]
+            << " = " << tables[table].Price[i] * tables[table].Amount[i] << " BAHT" << endl;
+   
+    }
+    cout << "TOTAL PRICE : " << tables[table].total << " BATH" << endl;
+    cout << "-------------------------------------\n\n\n" << endl;
+}
+
+void employ() {
+    while (true) {
+        cout << endl;
+        cout << "======= TABLE STATUS =======" << endl;
+        for (int i = 1; i <= 5; i++) {
+            cout << "Table " << i << " : ";
+            if (tables[i].count > 0) cout << "[NOT AVAILABLE]" << endl;
+            else cout << "[AVAILABLE]" << endl;
         }
-        else if (more == 2) {
-            showBill();
+        cout << "Select table (0 to Exit): "; 
+        cin >> check;
+
+        if (check == 0) return;
+
+        if (tables[check].count > 0) {
+            for (int i = 0; i < tables[check].count; i++) {
+                cout << tables[check].List[i] << " x" << tables[check].Amount[i] << " = "
+                    << tables[check].Price[i] * tables[check].Amount[i] << endl;
+            }
+
+            cout << "Total : " << tables[check].total << endl;
+            cout << "1.Clear table | 0.Back : ";
+
+            int cmd;
+            cin >> cmd;
+            if (cmd == 1) {
+                // เคลียร์ข้อมูลใน vector สำหรับโต๊ะนั้นๆ
+                tables[check].List.clear();
+                tables[check].Price.clear();
+                tables[check].Amount.clear();
+                tables[check].count = 0;
+                tables[check].total = 0;
+                cout << ">>> CLEARED <<<" << endl;
+            }
+        }
+        else cout << "No orders" << endl;
+    }
+}
+
+void Host() {
+    int choose;
+    while (true) {
+        cout << endl;
+        cout << "--- HOST MENU ---" << endl;
+        cout << "1.Summary" << endl;
+        cout << "2.Table Usage" << endl;
+        cout << "0.Back" << endl;
+        cout << "SELECT OPTION >> ";
+        cin >> choose;
+        if (choose == 1) summarize();
+        else if (choose == 2) checktable();
+        else if (choose == 0) break;
+    }
+}
+
+void summarize() {
+    int grandTotal = 0;
+    for (int i = 1; i <= 5; i++) grandTotal += tables[i].total;
+    cout << endl;
+    cout << "TOTAL REVENUE : " << grandTotal << " Baht" << endl;
+}
+
+void checktable() {
+    cout << endl;
+    cout << "--- TABLE USAGE STATISTICS ---" << endl;
+    for (int i = 1; i <= 5; i++)
+        cout << "Table " << i << " used " << useTable[i] << " times" << endl;
+}
+
+void checkfood() {}
+
+void saveData() {
+    json j;
+    //j["grandTotal"] = grandTotal;
+
+    // เก็บสถิติการใช้โต๊ะ
+    for (int i = 1; i <= 5; i++) {
+        j["useTable"][to_string(i)] = useTable[i];
+    }
+
+    // เก็บข้อมูลแต่ละโต๊ะ
+    for (int i = 1; i <= 5; i++) {
+        json tJ;
+        tJ["count"] = tables[i].count;
+        tJ["total"] = tables[i].total;
+
+        json orders = json::array();
+        for (int k = 0; k < tables[i].count; k++) {
+            orders.push_back({
+                {"item", tables[i].List[k]},
+                {"price", tables[i].Price[k]},
+                {"qty", tables[i].Amount[k]}
+                });
+        }
+        tJ["orders"] = orders;
+        j["tables"][to_string(i)] = tJ;
+    }
+
+    ofstream file("database.json");
+    file << j.dump(4); // บันทึกแบบเว้นวรรคให้อ่านง่าย
+    file.close();
+}
+void loadData() {
+    ifstream file("database.json");
+    if (!file.is_open()) return;
+
+    json j;
+    file >> j;
+    file.close();
+
+    //grandTotal = j.value("grandTotal", 0);
+
+    for (int i = 1; i <= 5; i++) {
+        useTable[i] = j["useTable"].value(to_string(i), 0);
+
+        if (!j["tables"].contains(to_string(i))) continue;
+
+        auto& tJson = j["tables"][to_string(i)];
+        tables[i].count = tJson.value("count", 0);
+        tables[i].total = tJson.value("total", 0);
+
+        for (auto& order : tJson["orders"]) {
+            tables[i].List.push_back(order.value("item", ""));
+            tables[i].Price.push_back(order.value("price", 0));
+            tables[i].Amount.push_back(order.value("qty", 0));
+        }
+    }
+}
+
+int main() {
+    loadData();
+    while (true) {
+        home();
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            cout << "Invalid input! Try again." << endl;
+            continue;
+        }
+        if (Num == 0) {
+            cout << endl << "Exiting program..." << endl;
+            saveData();
             return 0;
         }
-        else if (more == 0) {
-            return 0; // กลับไป main
+        if (Num == 1) { table = 0; customer(); }
+        else if (Num == 2 || Num == 3) {
+            string pass;
+            cout << ">>>>>> LOGIN <<<<<<" << endl;
+            cout << "Enter Password: ";
+            cin >> pass;
+            if (Num == 2 && pass == "555") employ();
+            else if (Num == 3 && pass == "header") Host();
+            else cout << "Wrong Password!" << endl;
         }
-        else if (more == 9) {
-            selectTable();        // เลือกโต๊ะใหม่
-            return 1;            // กลับไปที่ customer() ใหม่;
-        }
-        else {
-            cout << "Invalid!! please choose again" << endl;
-        }
+        else cout << "Invalid selection!" << endl;
     }
 }
